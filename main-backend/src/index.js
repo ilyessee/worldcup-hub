@@ -7,7 +7,17 @@ import { apiRouter } from "./routes/api.js";
 import { attachLiveScores } from "./ws/liveScores.js";
 
 const app = express();
-app.use(cors({ origin: config.frontendUrl }));
+// Allow the configured frontend plus any localhost port during development
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || origin === config.frontendUrl || /^http:\/\/localhost:\d+$/.test(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error("Not allowed by CORS"));
+    },
+  })
+);
 app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ status: "ok", service: "main-backend" }));

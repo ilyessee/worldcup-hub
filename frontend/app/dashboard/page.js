@@ -10,6 +10,12 @@ const TEAMS = [
   "Colombia", "USA", "Mexico", "Japan", "Senegal", "Switzerland",
 ];
 
+// The matches API returns teams as objects ({name, crest}); predictions use plain strings
+function teamName(team) {
+  if (!team) return "?";
+  return typeof team === "string" ? team : team.name || "?";
+}
+
 const STAGES = [
   ["GROUP_STAGE", "Group stage"],
   ["ROUND_OF_16", "Round of 16"],
@@ -223,7 +229,7 @@ export default function Dashboard() {
                   .map((m, i) => (
                     <li key={i}>
                       <span>
-                        {m.home_team ?? m.homeTeam ?? "?"} vs {m.away_team ?? m.awayTeam ?? "?"}
+                        {teamName(m.home_team ?? m.homeTeam)} vs {teamName(m.away_team ?? m.awayTeam)}
                       </span>
                       <span className="muted">
                         {m.status ?? ""} {m.home_score ?? ""}{m.home_score != null ? "–" : ""}{m.away_score ?? ""}
