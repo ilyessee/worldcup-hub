@@ -1,0 +1,15 @@
+{
+  "name": "favorites-service",
+  "version": "1.0.0",
+  "description": "Microservice managing favorite teams and prediction history (MongoDB)",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5"
+  }
+}
