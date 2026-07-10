@@ -16,6 +16,28 @@ function teamName(team) {
   return typeof team === "string" ? team : team.name || "?";
 }
 
+const LIVE_STATUSES = new Set(["IN_PLAY", "PAUSED", "LIVE"]);
+
+// Order matches for display: live first, then the next 2 scheduled
+// matches with known teams, then the most recent results.
+function buildMatchList(all) {
+  const dateOf = (m) => new Date(m.utc_date ?? m.utcDate ?? 0).getTime();
+  const hasTeams = (m) =>
+    teamName(m.home_team ?? m.homeTeam) !== "?" &&
+    teamName(m.away_team ?? m.awayTeam) !== "?";
+
+  const live = all.filter((m) => LIVE_STATUSES.has(m.status));
+  const upcoming = all
+    .filter((m) => !LIVE_STATUSES.has(m.status) && m.status !== "FINISHED" && hasTeams(m))
+    .sort((a, b) => dateOf(a) - dateOf(b))
+    .slice(0, 2);
+  const finished = all
+    .filter((m) => m.status === "FINISHED")
+    .sort((a, b) => dateOf(b) - dateOf(a));
+
+  return [...live, ...upcoming, ...finished].slice(0, 8);
+}
+
 const STAGES = [
   ["GROUP_STAGE", "Group stage"],
   ["ROUND_OF_16", "Round of 16"],
@@ -224,15 +246,21 @@ export default function Dashboard() {
             <>
               <p className="muted">Updated {new Date(liveMatches.at).toLocaleTimeString()}</p>
               <ul className="clean">
-                {(liveMatches.matches?.matches || liveMatches.matches || [])
-                  .slice(0, 8)
+                {buildMatchList(liveMatches.matches?.matches || liveMatches.matches || [])
                   .map((m, i) => (
                     <li key={i}>
                       <span>
                         {teamName(m.home_team ?? m.homeTeam)} vs {teamName(m.away_team ?? m.awayTeam)}
                       </span>
                       <span className="muted">
-                        {m.status ?? ""} {m.home_score ?? ""}{m.home_score != null ? "–" : ""}{m.away_score ?? ""}
+                        {m.status === "FINISHED" || LIVE_STATUSES.has(m.status)
+                          ? `${m.status} ${m.home_score ?? ""}–${m.away_score ?? ""}`
+                          : new Date(m.utc_date ?? m.utcDate).toLocaleString(undefined, {
+                              day: "2-digit",
+                              month: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                       </span>
                     </li>
                   ))}
