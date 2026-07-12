@@ -133,4 +133,5 @@ put the client id/secret in `main-backend/.env`.
 ## Team
 
 - Ilyesse Essalihi
-- (add teammates here)
+- Diakite Diaby
+- Queroy Adrien
