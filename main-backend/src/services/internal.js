@@ -50,3 +50,13 @@ export const favoritesService = {
       body: JSON.stringify(entry),
     }),
 };
+
+export const accuracyService = {
+  report: () => callService(config.favoritesServiceUrl, "/accuracy"),
+  storedIds: () => callService(config.favoritesServiceUrl, "/accuracy/ids"),
+  saveBulk: (evaluations) =>
+    callService(config.favoritesServiceUrl, "/accuracy/bulk", {
+      method: "POST",
+      body: JSON.stringify({ evaluations }),
+    }),
+};

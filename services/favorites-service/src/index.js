@@ -1,6 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-import { Favorite, PredictionHistory } from "./models.js";
+import { Favorite, PredictionHistory, MatchAccuracy } from "./models.js";
 
 const app = express();
 app.use(express.json());
@@ -77,6 +77,44 @@ app.post("/history", async (req, res) => {
     probabilities,
   });
   res.status(201).json(entry);
+});
+
+// --- Model accuracy tracking (prediction vs real result) ---
+
+// Ids already evaluated, so the gateway skips re-predicting them
+app.get("/accuracy/ids", async (_req, res) => {
+  const rows = await MatchAccuracy.find({}, { matchId: 1, _id: 0 });
+  res.json(rows.map((r) => r.matchId));
+});
+
+// Full report + summary stats
+app.get("/accuracy", async (_req, res) => {
+  const rows = await MatchAccuracy.find({}).sort({ playedAt: -1 });
+  const total = rows.length;
+  const correct = rows.filter((r) => r.correct).length;
+  res.json({
+    total,
+    correct,
+    accuracy: total ? correct / total : 0,
+    matches: rows,
+  });
+});
+
+// Upsert a batch of match evaluations
+app.post("/accuracy/bulk", async (req, res) => {
+  const { evaluations } = req.body;
+  if (!Array.isArray(evaluations)) {
+    return res.status(400).json({ error: "evaluations must be an array" });
+  }
+  const ops = evaluations.map((e) => ({
+    updateOne: {
+      filter: { matchId: e.matchId },
+      update: { $set: e },
+      upsert: true,
+    },
+  }));
+  if (ops.length) await MatchAccuracy.bulkWrite(ops);
+  res.json({ upserted: ops.length });
 });
 
 app.use((err, _req, res, _next) => {

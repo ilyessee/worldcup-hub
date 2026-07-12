@@ -56,16 +56,32 @@ export default function Dashboard() {
   const [prediction, setPrediction] = useState(null);
   const [predicting, setPredicting] = useState(false);
   const [error, setError] = useState(null);
+  const [accuracy, setAccuracy] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const wsRef = useRef(null);
 
   const loadUserData = useCallback(async () => {
-    const [favs, hist] = await Promise.all([
+    const [favs, hist, acc] = await Promise.all([
       apiFetch("/api/v1/favorites"),
       apiFetch("/api/v1/history"),
+      apiFetch("/api/v1/accuracy"),
     ]);
     setFavorites(favs);
     setHistory(hist);
+    setAccuracy(acc);
   }, []);
+
+  async function refreshAccuracy() {
+    setRefreshing(true);
+    setError(null);
+    try {
+      setAccuracy(await apiFetch("/api/v1/accuracy/refresh", { method: "POST" }));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRefreshing(false);
+    }
+  }
 
   useEffect(() => {
     const token = getToken();
@@ -294,6 +310,53 @@ export default function Dashboard() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section className="panel">
+          <div className="row" style={{ justifyContent: "space-between" }}>
+            <h2>🎯 Model accuracy</h2>
+            <button className="btn secondary small" onClick={refreshAccuracy} disabled={refreshing}>
+              {refreshing ? "Computing…" : "Refresh"}
+            </button>
+          </div>
+          <p className="hint">Model prediction vs real result, over every match already played.</p>
+
+          {(!accuracy || accuracy.total === 0) && (
+            <p className="muted">
+              No matches evaluated yet. Click “Refresh” to backtest the model on
+              played matches.
+            </p>
+          )}
+
+          {accuracy && accuracy.total > 0 && (
+            <>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "0.6rem", marginBottom: "0.4rem" }}>
+                <span style={{ fontSize: "2.2rem", fontWeight: 700, color: "var(--emerald-400)" }}>
+                  {(accuracy.accuracy * 100).toFixed(0)}%
+                </span>
+                <span className="muted">
+                  {accuracy.correct} correct / {accuracy.total} matches
+                </span>
+              </div>
+              <div className="proba-bar" style={{ marginBottom: "0.75rem" }}>
+                <div style={{ width: `${accuracy.accuracy * 100}%`, background: "#34d399" }} />
+                <div style={{ width: `${(1 - accuracy.accuracy) * 100}%`, background: "#6b7280" }} />
+              </div>
+              <ul className="clean">
+                {accuracy.matches.slice(0, 8).map((m) => (
+                  <li key={m.matchId}>
+                    <span>
+                      {m.correct ? "✅" : "❌"} {m.homeTeam} {m.homeScore}–{m.awayScore} {m.awayTeam}
+                    </span>
+                    <span className="muted">
+                      pred: {m.predictedResult === "home_win" ? m.homeTeam
+                        : m.predictedResult === "away_win" ? m.awayTeam : "draw"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </section>
       </div>
       </main>
