@@ -143,17 +143,28 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="topbar">
-        <strong>⚽ WorldCup Hub</strong>
-        <div className="row">
-          <span className="muted">{user.name || user.email}</span>
-          <button className="btn secondary small" onClick={logout}>Log out</button>
+      <header className="site-header">
+        <div className="site-header-inner">
+          <div>
+            <div className="site-title">
+              WorldCup Hub <span className="accent">2026</span>
+            </div>
+            <p className="site-subtitle">
+              Prédictions ML, équipes favorites et scores en direct.
+            </p>
+          </div>
+          <div className="row">
+            <span className="muted">{user.name || user.email}</span>
+            <button className="btn secondary small" onClick={logout}>Log out</button>
+          </div>
         </div>
-      </div>
+      </header>
 
+      <main>
       <div className="grid">
         <section className="panel">
-          <h2>Match predictor</h2>
+          <h2>🎮 Match predictor</h2>
+          <p className="hint">Choisis deux équipes pour voir ce que prédit le modèle.</p>
           <form onSubmit={predict}>
             <div className="row">
               <select
@@ -162,7 +173,7 @@ export default function Dashboard() {
               >
                 {TEAMS.map((t) => <option key={t}>{t}</option>)}
               </select>
-              <span className="muted">vs</span>
+              <span className="vs">VS</span>
               <select
                 value={form.awayTeam}
                 onChange={(e) => setForm({ ...form, awayTeam: e.target.value })}
@@ -184,7 +195,7 @@ export default function Dashboard() {
           </form>
           {error && <p className="error">{error}</p>}
           {prediction && (
-            <div style={{ marginTop: "1rem" }}>
+            <div className="result-box">
               <strong>
                 {prediction.prediction === "home_win" && `${form.homeTeam} wins`}
                 {prediction.prediction === "away_win" && `${form.awayTeam} wins`}
@@ -193,9 +204,9 @@ export default function Dashboard() {
               {probas && (
                 <>
                   <div className="proba-bar">
-                    <div style={{ width: `${probas.home_win * 100}%`, background: "#2ea043" }} />
-                    <div style={{ width: `${probas.draw * 100}%`, background: "#8b949e" }} />
-                    <div style={{ width: `${probas.away_win * 100}%`, background: "#1f6feb" }} />
+                    <div style={{ width: `${probas.home_win * 100}%`, background: "#34d399" }} />
+                    <div style={{ width: `${probas.draw * 100}%`, background: "#6b7280" }} />
+                    <div style={{ width: `${probas.away_win * 100}%`, background: "#fbbf24" }} />
                   </div>
                   <p className="muted" style={{ marginTop: "0.4rem" }}>
                     {form.homeTeam} {(probas.home_win * 100).toFixed(1)}% · draw{" "}
@@ -209,14 +220,14 @@ export default function Dashboard() {
         </section>
 
         <section className="panel">
-          <h2>My favorite teams</h2>
+          <h2>⭐ My favorite teams</h2>
           {favorites.length === 0 && <p className="muted">No favorites yet.</p>}
           <div>
             {favorites.map((f) => (
               <span key={f.team} className="badge">
                 {f.team}{" "}
                 <a
-                  style={{ cursor: "pointer", color: "var(--danger)" }}
+                  style={{ cursor: "pointer", color: "var(--red-300)" }}
                   onClick={() => removeFavorite(f.team)}
                 >
                   ×
@@ -229,8 +240,7 @@ export default function Dashboard() {
             {TEAMS.filter((t) => !favoriteTeams.has(t)).slice(0, 8).map((t) => (
               <span
                 key={t}
-                className="badge"
-                style={{ cursor: "pointer" }}
+                className="badge clickable"
                 onClick={() => addFavorite(t)}
               >
                 + {t}
@@ -240,7 +250,7 @@ export default function Dashboard() {
         </section>
 
         <section className="panel">
-          <h2>Live matches</h2>
+          <h2>📺 Live matches</h2>
           {!liveMatches && <p className="muted">Waiting for live data…</p>}
           {liveMatches && (
             <>
@@ -249,8 +259,12 @@ export default function Dashboard() {
                 {buildMatchList(liveMatches.matches?.matches || liveMatches.matches || [])
                   .map((m, i) => (
                     <li key={i}>
-                      <span>
-                        {teamName(m.home_team ?? m.homeTeam)} vs {teamName(m.away_team ?? m.awayTeam)}
+                      <span className="team">
+                        {m.home_team?.crest && <img src={m.home_team.crest} alt="" />}
+                        {teamName(m.home_team ?? m.homeTeam)}
+                        <span className="vs">vs</span>
+                        {m.away_team?.crest && <img src={m.away_team.crest} alt="" />}
+                        {teamName(m.away_team ?? m.awayTeam)}
                       </span>
                       <span className="muted">
                         {m.status === "FINISHED" || LIVE_STATUSES.has(m.status)
@@ -270,7 +284,7 @@ export default function Dashboard() {
         </section>
 
         <section className="panel">
-          <h2>My prediction history</h2>
+          <h2>🕘 My prediction history</h2>
           {history.length === 0 && <p className="muted">No predictions yet.</p>}
           <ul className="clean">
             {history.slice(0, 8).map((h) => (
@@ -282,6 +296,7 @@ export default function Dashboard() {
           </ul>
         </section>
       </div>
+      </main>
     </>
   );
 }

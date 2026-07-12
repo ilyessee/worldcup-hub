@@ -36,8 +36,9 @@ function Landing() {
   }
 
   return (
+    <main>
     <div className="hero">
-      <h1>⚽ WorldCup Hub</h1>
+      <h1>⚽ WorldCup Hub <span className="accent">2026</span></h1>
       <p>
         Predictions, favorite teams and live scores for the 2026 World Cup —
         powered by our ML prediction API.
@@ -57,6 +58,7 @@ function Landing() {
       </div>
       {error && <p className="error">{error}</p>}
     </div>
+    </main>
   );
 }
 
