@@ -10,10 +10,12 @@
 import express from "express";
 import cors from "cors";
 import http from "node:http";
+import swaggerUi from "swagger-ui-express";
 import { config } from "./config.js";
 import { authRouter } from "./routes/auth.js";
 import { apiRouter } from "./routes/api.js";
 import { attachLiveScores } from "./ws/liveScores.js";
+import { openApiSpec } from "./openapi.js";
 
 const app = express();
 // Allow the configured frontend plus any localhost port during development
@@ -30,6 +32,12 @@ app.use(
 app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ status: "ok", service: "main-backend" }));
+
+// Interactive API documentation (Swagger UI) at /api-docs
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpec, {
+  customSiteTitle: "WorldCup Hub API",
+}));
+app.get("/openapi.json", (_req, res) => res.json(openApiSpec));
 
 app.use("/auth", authRouter);
 app.use("/api/v1", apiRouter);
