@@ -1,3 +1,9 @@
+// PURPOSE: Mongoose schemas (MongoDB collections) for favorites-service.
+//
+// WHAT THIS FILE DOES:
+//   1. Favorite          -> one favorite team per user (unique userId+team)
+//   2. PredictionHistory -> every prediction a user made (with probabilities)
+//   3. MatchAccuracy     -> one row per real match: model prediction vs result
 import mongoose from "mongoose";
 
 const favoriteSchema = new mongoose.Schema(

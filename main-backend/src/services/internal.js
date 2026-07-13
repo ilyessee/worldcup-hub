@@ -1,3 +1,11 @@
+// PURPOSE: Service-to-service client used by the gateway to talk to the
+// microservices, authenticated with the shared internal token.
+//
+// WHAT THIS FILE DOES:
+//   1. callService()      -> fetch wrapper that adds the x-internal-token header
+//   2. usersService       -> upsert / get a user (users-service)
+//   3. favoritesService   -> favorites + prediction history (favorites-service)
+//   4. accuracyService    -> model accuracy report / storage (favorites-service)
 import { config } from "../config.js";
 
 // Small fetch wrapper for service-to-service calls, authenticated

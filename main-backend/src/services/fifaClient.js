@@ -1,3 +1,10 @@
+// PURPOSE: Client for the EXTERNAL API — our own FIFA World Cup MLOps
+// backend (FastAPI + MLflow, deployed on Render) that serves the ML model.
+//
+// WHAT THIS FILE DOES:
+//   1. predictMatch()   -> POST /predict on the external API, returns the
+//      predicted result + probabilities
+//   2. getLiveMatches() -> GET /matches on the external API (live scores)
 import { config } from "../config.js";
 
 // External API integration: the FIFA World Cup MLOps backend

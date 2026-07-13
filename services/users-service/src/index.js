@@ -1,3 +1,12 @@
+// PURPOSE: users-service — the microservice that owns user accounts in PostgreSQL.
+//
+// WHAT THIS FILE DOES:
+//   1. Reject any request that lacks the shared x-internal-token (403) — only the
+//      gateway may call this service, never the outside world
+//   2. POST /users/upsert -> create the user on first Google login, or refresh
+//      their profile on later logins (unique on google_id, no duplicates)
+//   3. GET  /users/:id    -> read a user profile
+//   4. Create the users table at startup and start listening
 import express from "express";
 import { pool, initSchema } from "./db.js";
 

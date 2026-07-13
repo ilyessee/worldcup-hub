@@ -1,3 +1,9 @@
+// PURPOSE: Frontend helper for talking to the gateway with the JWT.
+//
+// WHAT THIS FILE DOES:
+//   1. getToken / setToken / clearToken -> store the JWT in localStorage
+//   2. apiFetch() -> attach "Authorization: Bearer <jwt>" to every request,
+//      and on a 401 (expired token) clear it and redirect to the login page
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 

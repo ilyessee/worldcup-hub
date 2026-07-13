@@ -1,3 +1,12 @@
+// PURPOSE: favorites-service — the microservice that owns favorites, prediction
+// history and model-accuracy data in MongoDB.
+//
+// WHAT THIS FILE DOES:
+//   1. Reject any request without the shared x-internal-token (403)
+//   2. /favorites  (GET/POST/DELETE) -> a user's favorite teams
+//   3. /history    (GET/POST)        -> a user's prediction history
+//   4. /accuracy   (GET, /ids, /bulk)-> model prediction vs real result tracking
+//   5. Connect to MongoDB and start listening
 import express from "express";
 import mongoose from "mongoose";
 import { Favorite, PredictionHistory, MatchAccuracy } from "./models.js";

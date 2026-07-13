@@ -1,3 +1,13 @@
+// PURPOSE: The business REST API (/api/v1) — also an "API as a Service" that any
+// external client can call with a JWT. Every route below requires a valid JWT.
+//
+// WHAT THIS FILE DOES:
+//   1. requireAuth is applied to the whole router (401 without a valid JWT)
+//   2. POST /predict            -> ML prediction (external API) + log to history
+//   3. GET  /matches            -> live World Cup matches (external API)
+//   4. GET  /accuracy           -> stored model accuracy report
+//   5. POST /accuracy/refresh   -> backtest the model on finished matches
+//   6. /favorites, /history     -> delegate to favorites-service (MongoDB)
 import { Router } from "express";
 import { requireAuth } from "../auth/jwt.js";
 import { favoritesService, accuracyService } from "../services/internal.js";

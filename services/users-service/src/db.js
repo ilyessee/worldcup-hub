@@ -1,3 +1,9 @@
+// PURPOSE: PostgreSQL connection pool and schema for users-service.
+//
+// WHAT THIS FILE DOES:
+//   1. Open a connection pool to PostgreSQL (from DATABASE_URL)
+//   2. initSchema() -> create the "users" table if it doesn't exist,
+//      with a UNIQUE constraint on google_id
 import pg from "pg";
 
 const { Pool } = pg;

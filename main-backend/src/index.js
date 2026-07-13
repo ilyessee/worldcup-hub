@@ -1,3 +1,12 @@
+// PURPOSE: Entry point of the main backend / API gateway — the only
+// service exposed to the outside world.
+//
+// WHAT THIS FILE DOES:
+//   1. Configure CORS (only the frontend / any localhost port is accepted)
+//   2. Mount the /auth routes (Google login, JWT) and /api/v1 routes (business API)
+//   3. Expose a /health check and a catch-all 404 handler
+//   4. Centralized error handler (clean JSON, never leaks a stack trace)
+//   5. Attach the WebSocket server (/ws/live) and start listening
 import express from "express";
 import cors from "cors";
 import http from "node:http";

@@ -1,5 +1,14 @@
 "use client";
 
+// PURPOSE: The protected dashboard — the main screen once a user is logged in.
+//
+// WHAT THIS FILE DOES:
+//   1. Route protection: if there is no JWT, redirect to the login page
+//   2. Load the user (/auth/me), favorites, history and accuracy over REST
+//   3. Open a WebSocket (/ws/live) to receive live scores pushed by the server
+//   4. Predict a match, add/remove favorites, refresh model accuracy
+//   5. Render the panels (predictor, favorites, live matches, history, accuracy)
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { API_URL, apiFetch, clearToken, getToken } from "@/lib/api";

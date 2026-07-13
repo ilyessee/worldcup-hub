@@ -1,3 +1,11 @@
+// PURPOSE: The second API paradigm — a WebSocket that PUSHES live match
+// scores to connected clients (REST is request/response, this is server push).
+//
+// WHAT THIS FILE DOES:
+//   1. Open a WebSocket server on /ws/live
+//   2. On connection, verify the JWT passed as ?token= (close 4401 if invalid)
+//   3. Every 60s, fetch the latest matches and push them to all clients
+//   4. Send the last known state immediately to a newly connected client
 import { WebSocketServer } from "ws";
 import { verifyToken } from "../auth/jwt.js";
 import { getLiveMatches } from "../services/fifaClient.js";

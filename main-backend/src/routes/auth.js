@@ -1,3 +1,11 @@
+// PURPOSE: Authentication routes — Google OAuth 2.0 login and JWT issuance.
+//
+// WHAT THIS FILE DOES:
+//   1. GET /auth/google          -> redirect the user to Google's consent screen
+//   2. GET /auth/google/callback -> exchange the code for the Google profile,
+//      upsert the user in users-service, sign a JWT, redirect to the frontend
+//   3. GET /auth/dev-login       -> dev-only shortcut to get a JWT without Google
+//   4. GET /auth/me              -> return the current user (requires a valid JWT)
 import { Router } from "express";
 import crypto from "node:crypto";
 import { config } from "../config.js";

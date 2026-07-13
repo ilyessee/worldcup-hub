@@ -1,3 +1,12 @@
+// PURPOSE: Everything about JSON Web Tokens — create them at login and
+// verify them on every protected request.
+//
+// WHAT THIS FILE DOES:
+//   1. signToken()   -> sign a JWT for a user (payload + secret, expires in 12h)
+//   2. verifyToken() -> check a token's signature and decode it
+//   3. requireAuth   -> Express middleware protecting routes: reads the
+//      "Authorization: Bearer <jwt>" header, verifies it, attaches req.user,
+//      and returns 401 "Access denied" if the token is missing or invalid
 import jwt from "jsonwebtoken";
 import { config } from "../config.js";
 

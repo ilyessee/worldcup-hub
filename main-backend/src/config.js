@@ -1,3 +1,6 @@
+// PURPOSE: Central configuration read from environment variables (12-factor):
+// server, JWT secret, Google OAuth credentials, microservice URLs, external API.
+// Every value has a safe default for local development.
 export const config = {
   port: process.env.PORT || 4000,
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
